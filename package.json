@@ -1,0 +1,24 @@
+{
+  "name": "ichariba-link",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces":[
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kai-tsukayama/Ichariba-Link.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kai-tsukayama/Ichariba-Link/issues"
+  },
+  "homepage": "https://github.com/kai-tsukayama/Ichariba-Link#readme"
+}
