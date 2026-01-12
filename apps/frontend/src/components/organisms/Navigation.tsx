@@ -1,7 +1,11 @@
+"use client"
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const Navigation = () => {
+  const router = useRouter();
   return (
     <aside className="w-64 h-screen bg-white shadow-md flex flex-col">
       <div className="flex flex-col items-center py-6 border-b border-[#DDDDDD]">
@@ -21,7 +25,7 @@ const Navigation = () => {
             メッセージ
           </Link>
 
-          <Link href="/events" className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white">
+          <Link href="/home" className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white">
             イベント一覧
           </Link>
 
@@ -32,11 +36,11 @@ const Navigation = () => {
       </div>
 
       <div className="mt-auto bg-[#3BB1FF] text-white px-6 py-4 space-y-3">
-        <Link href="/settings" className="block hover:underline">
+        <Link href="/setting" className="block hover:underline">
           設定
         </Link>
 
-        <button className="block hover:underline text-white">
+        <button onClick={() => router.push("/login")} className="block hover:underline text-white">
           ログアウト
         </button>
       </div>

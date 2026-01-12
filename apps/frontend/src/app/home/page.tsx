@@ -1,19 +1,19 @@
+import SerchEvents from '@/components/atoms/SerchEvents'
 import Header from '@/components/organisms/Header'
 import Navigation from '@/components/organisms/Navigation'
-import EventGenerateField from '@/components/ui/EventGenerateField'
 import React from 'react'
 
-const EventGenerate = () => {
+const HomePage = () => {
   return (
     <div className="bg-[#F0F4FF]">
-      <div className="flex h-full">
+      <div className="flex h-screen">
         <Navigation />
         <div className="flex-1 flex flex-col px-1">
           <div className='shrink-0'>
-            <Header />
+            <Header title="イベント一覧" />
           </div>
           <div className='flex-1 overflow-y-auto'>
-            <EventGenerateField />
+            <SerchEvents />
           </div>
         </div>
       </div>
@@ -21,4 +21,4 @@ const EventGenerate = () => {
   )
 }
 
-export default EventGenerate
+export default HomePage

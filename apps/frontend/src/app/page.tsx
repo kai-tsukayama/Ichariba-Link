@@ -4,25 +4,19 @@ import SubHeader from "@/components/atoms/SubHeader"
 import Image from "next/image";
 import MessageInput from "@/components/atoms/MessageInput";
 import MessageField from "@/components/ui/MessageField";
-import MessageDetails from "./pages/MessageDetails";
-import HomePage from "./pages/HomePage";
-import EventDetails from "./pages/EventDetails";
-import Login from "./pages/Login";
-import SignIn from "./pages/SignIn";
-import Messages from "./pages/Messages";
-import EventGenerate from "./pages/EventGenerate";
+import MessageDetails from "./chat/page";
+import HomePage from "./home/page";
+import EventDetails from "./events/[id]/page";
+import Login from "./login/page";
+import SignIn from "./signin/page";
+import Messages from "./messages/page";
+import EventGenerate from "./events/create/page";
 
 
 export default function Home() {
   return (
     <div>
-      <MessageDetails />
-      {/* <HomePage /> */}
-      {/* <EventDetails /> */}
-      {/* <Login /> */}
-      {/* <SignIn /> */}
-      {/* <Messages /> */}
-      {/* <EventGenerate /> */}
+      <Login />
     </div>
   );
 }

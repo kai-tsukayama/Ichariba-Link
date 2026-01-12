@@ -1,7 +1,11 @@
+"use client"
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const SignIn = () => {
+  const router = useRouter();
   return (
     <div className="h-screen flex items-center justify-center bg-white px-30">
       <div className="flex flex-col flex-1 items-center justify-center text-center relative -mt-40">
@@ -53,7 +57,7 @@ const SignIn = () => {
 
           <div className="text-sm text-gray-600">
             Already have an account?
-            <span className="text-[#F8574A] cursor-pointer pl-5">Login</span>
+            <span onClick={() => router.push("/login")} className="text-[#F8574A] cursor-pointer pl-5">Login</span>
           </div>
 
         </div>

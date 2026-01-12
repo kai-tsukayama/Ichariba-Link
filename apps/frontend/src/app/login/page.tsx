@@ -1,7 +1,28 @@
+"use client"
+
 import Image from 'next/image'
-import React from 'react'
+import React, { use, useState } from 'react'
+import { LoginUser, seedUser } from '../seeds/LoginUserSeed';
+import { useRouter } from 'next/navigation';
 
 const Login = () => {
+  const router = useRouter();
+
+  const [name, SetName] = useState("");
+  const [pass, SetPass] = useState("");
+  const [error, SetError] = useState("");
+
+  const handleLogin = () => {
+    const user = seedUser.find((u) => (u.name === name || u.email === name) && u.pass === pass)
+
+    if(user) {
+      router.push("/home")
+    }
+    else {
+      SetError("名前 / メールアドレス または パスワードが違います")
+    }
+  }
+
   return (
     <div className="h-screen flex items-center justify-center bg-white px-30">
       <div className="flex flex-col flex-1 items-center justify-center text-center relative -mt-40">
@@ -33,15 +54,19 @@ const Login = () => {
             type="text"
             placeholder="Name or Email"
             className="w-full border-b border-gray-300 p-2 mb-8 outline-none"
+            onChange={(e) => SetName(e.target.value)}
           />
 
           <input
             type="password"
             placeholder="Password"
             className="w-full border-b border-gray-300 p-2 mb-8 outline-none"
+            onChange={(e) => SetPass(e.target.value)}
           />
 
-          <button className="w-full bg-[#F8574A] text-white py-3 rounded-full text-lg mb-4 font-bold">
+          {error && (<p className='text-red-500 text-sm mb-4'>{error}</p>)}
+
+          <button onClick={handleLogin} className="w-full bg-[#F8574A] text-white py-3 rounded-full text-lg mb-4 font-bold">
             Login
           </button>
 
@@ -52,7 +77,7 @@ const Login = () => {
 
           <div className="text-sm text-gray-600 mt-2">
             Don't have an account?{" "}
-            <span className="text-[#F8574A] cursor-pointer">Sign up!</span>
+            <span onClick={() => router.push("/signin")} className="text-[#F8574A] cursor-pointer">Sign up!</span>
           </div>
 
         </div>

@@ -1,28 +1,25 @@
-import { Message } from "../interfaces/Message";
+import { Message, MessageUser } from "../interfaces/Message";
 
+// ユーザーのシードデータ
+export const messageUsersData: MessageUser[] = [
+    { id: 1, name: 'Name1', profile: 'Profile', type: 'new', color: 'bg-[#00D957]' },
+    { id: 2, name: 'Name2', profile: 'Profile', type: 'viewed', color: 'bg-[#FF9E9E]' },
+    { id: 3, name: 'Name3', profile: 'Profile', type: 'new', color: 'bg-[#00D957]' },
+    { id: 4, name: 'Name4', profile: 'Profile', type: 'viewed', color: 'bg-[#FF9E9E]' },
+];
+
+// メッセージのシードデータ
 export const seedMessages: Message[] = [
     {
         id: "1",
         userId: "11",
-        message: "これはテストデータです。",
-        postedAt: new Date("2025-12-08")
+        message: "こんにちは！",
+        postedAt: new Date(),
     },
     {
         id: "2",
         userId: "22",
-        message: "これは相手のテストデータです。",
-        postedAt: new Date("2025-12-09")
-    },
-    {
-        id: "3",
-        userId: "22",
-        message: "これは相手の昇順のテストデータです。",
-        postedAt: new Date("2025-12-10")
-    },
-    {
-        id: "4",
-        userId: "11",
-        message: "これは昇順のテストデータです。",
-        postedAt: new Date("2025-12-11")
+        message: "はじめまして、よろしくお願いします。",
+        postedAt: new Date(Date.now() - 1000 * 60 * 60),
     }
-]
+];
