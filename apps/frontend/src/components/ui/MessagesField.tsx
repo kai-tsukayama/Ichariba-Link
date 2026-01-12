@@ -35,7 +35,9 @@ const MessagesField = () => {
                         <div className='flex mb-4 w-full'>
                             <div className={`${msg.color} h-30 w-3 mr-2`}></div>
                             <div className='bg-white flex flex-1 items-center px-8'>
-                                <div className='rounded-full h-15 w-15 bg-[#D9D9D9]'></div>
+                                <div className='rounded-full h-15 w-15 bg-[#D9D9D9] overflow-hidden'>
+                                    <img src="/icons/chari-love.jpg" alt={msg.name} className="w-full h-full object-cover" />
+                                </div>
                                 <div className='pl-10'>
                                     <h2 className='text-xl font-bold'>{msg.name}</h2>
                                     <p className='text-[#7B7B7B]'>{msg.profile}</p>
