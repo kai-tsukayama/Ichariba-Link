@@ -1,28 +1,48 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SubHeader from '../atoms/SubHeader'
 import MessageInput from '../atoms/MessageInput'
 import MessageList from '../atoms/MessageList'
 import { seedMessages } from '@/app/seeds/MessageSeeds'
 import { Message } from '@/app/interfaces/Message'
+import { useAuth } from '@/store/useAuth'
+import { chatApi } from '@/utils/api'
+import Messages from '@/app/messages/page'
 
-const MessageField = () => {
-  const currentUser = "11"
+type Props = { roomId: string }
 
-  const [messages, setMessages] = useState<Message[]>(seedMessages)
+const MessageField = ({ roomId }: Props) => {
+  const  { userId } = useAuth()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [loading, setLoading] = useState(false)
+  
+  useEffect(() => {
+    if(!userId || !roomId) return
+    setLoading(true)
+    chatApi.history(userId, roomId)
+    .then((res) => {
+        const mapped = res.map((m: any) => ({
+          id: m.id,
+          userId: m.senderId,
+          message: m.content,
+          postedAt: new Date(m.createdAt),
+      }))
+      setMessages(mapped)
+    })
+    .finally(() => setLoading(false))
+    .catch(console.error)
+  }, [userId, roomId])
 
-  const addMessage = (text: string) => {
-    if (!text.trim()) return
-
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      userId: currentUser,
-      message: text,
-      postedAt: new Date(),
-    }
-
-    setMessages(prev => [...prev, newMessage])
+  const addMessage = async (text: string) => {
+    if (!text.trim() || !userId || !roomId) return
+    const created = await chatApi.sendMessage(userId, roomId, text)
+    setMessages((prev) => [...prev, {
+      id: created.id,
+      userId: created.senderId,
+      message: created.content,
+      postedAt: new Date(created.createdAt),
+    }])
   }
 
   return (
@@ -32,7 +52,7 @@ const MessageField = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <MessageList messages={messages} currentUser={currentUser} />
+        <MessageList messages={messages} currentUser={userId} />
       </div>
 
       <div className="shrink-0">

@@ -1,0 +1,26 @@
+import { ForbiddenException, Injectable, Inject } from '@nestjs/common';
+import { IMessageService } from '../interfaces/message.service.interface';
+import { MESSAGE_REPOSITORY } from 'src/domains/repositories/message.repository.interface';
+import type { IMessageRepository } from 'src/domains/repositories/message.repository.interface';
+import { CHAT_ROOM_REPOSITORY } from 'src/domains/repositories/chat-room.repository.interface';
+import type { IChatRoomRepository } from 'src/domains/repositories/chat-room.repository.interface';
+
+@Injectable()
+export class MessageService implements IMessageService {
+  constructor(
+    @Inject(MESSAGE_REPOSITORY) private readonly messages: IMessageRepository,
+    @Inject(CHAT_ROOM_REPOSITORY) private readonly chatRooms: IChatRoomRepository,
+  ) {}
+
+  async send(userId: string, roomId: string, content: string) {
+    const isMember = await this.chatRooms.isMember(roomId, userId);
+    if (!isMember) throw new ForbiddenException('not a member of this room');
+    return this.messages.create(roomId, userId, content);
+  }
+
+  async history(userId: string, roomId: string, limit = 20, cursor?: string) {
+    const isMember = await this.chatRooms.isMember(roomId, userId);
+    if (!isMember) throw new ForbiddenException('not a member of this room');
+    return this.messages.getHistory(roomId, limit, cursor);
+  }
+}
