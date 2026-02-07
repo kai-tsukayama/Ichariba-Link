@@ -4,16 +4,16 @@ type FetchOpts = {
     method?: string;
     headers?: Record<string, string>;
     body?: any;
-    userId: string;
+    token?: string | null;
 }
 
 async function api(path: string, opts: FetchOpts) {
-    const { userId, method = 'GET', headers = {}, body } = opts;
+    const { token, method = 'GET', headers = {}, body } = opts;
     const res = await fetch(`${API_BASE}${path}`, {
         method,
         headers: {
             'Content-Type': 'application/json',
-            'x-user-id': userId,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...headers,
         },
         body: body ? JSON.stringify(body) : undefined,
@@ -23,12 +23,17 @@ async function api(path: string, opts: FetchOpts) {
 }
 
 export const chatApi = {
-    createdRoom: (userId: string, partnerUserId: string) =>
-        api("/chat/rooms", {method: "POST", userId, body: { partnerUserId }}),
-    listRooms: (userId: string) =>
-        api("/chat/rooms", {userId}),
-    sendMessage: (userId:string, roomId: string, content: string) =>
-        api('/chat/messages', { method: 'POST', userId, body: { roomId, content } }),
-    history: (userId: string, roomId: string, limit = 20, cursor?: string) =>
-        api(`/chat/messages?roomId=${roomId}&limit=${limit}${cursor ? `&cursor=${cursor}` : ''}`, { userId }),
+    createdRoom: (token: string, partnerUserId: string) =>
+        api("/chat/rooms", {method: "POST", token, body: { partnerUserId }}),
+    listRooms: (token: string) =>
+        api("/chat/rooms", {token}),
+    sendMessage: (token:string, roomId: string, content: string) =>
+        api('/chat/messages', { method: 'POST', token, body: { roomId, content } }),
+    history: (token: string, roomId: string, limit = 20, cursor?: string) =>
+        api(`/chat/messages?roomId=${roomId}&limit=${limit}${cursor ? `&cursor=${cursor}` : ''}`, { token }),
+};
+
+export const userApi = {
+    list: (token: string) =>
+        api("/User", { token }),
 };

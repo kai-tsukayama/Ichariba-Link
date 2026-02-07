@@ -4,6 +4,7 @@ import { IUserPostService } from "../interfaces/user-post.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { USER_REPOSITORY } from "src/domains/repositories/user.repository.interface";
 import { UserRepository } from "src/infrastructures/repositories/user.repository";
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class UserPostService implements IUserPostService {
@@ -12,6 +13,7 @@ export class UserPostService implements IUserPostService {
     ){}
 
     async userPostAsync(req: UserPostRequest): Promise<User> {
-        return this.userRepository.create(req)
+        const hashed = await bcrypt.hash(req.password, 10);
+        return this.userRepository.create({ ...req, password: hashed })
     }
 }

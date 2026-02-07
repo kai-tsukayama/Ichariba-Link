@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT ?? 3001;
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   // 開発用CORS許可: フロント(3000)からのアクセスを許可
   app.enableCors({
@@ -16,10 +18,7 @@ async function bootstrap() {
     .setTitle("Ichariba-Link Project")
     .setDescription("API description")
     .setVersion("1.0")
-    .addApiKey(
-      { type: 'apiKey', name: 'x-user-id', in: 'header' },
-      'x-user-id',
-      )
+    .addBearerAuth()
     .build();
 
     const document = SwaggerModule.createDocument(app, config);

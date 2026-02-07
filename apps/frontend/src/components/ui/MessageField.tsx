@@ -4,45 +4,47 @@ import React, { useEffect, useState } from 'react'
 import SubHeader from '../atoms/SubHeader'
 import MessageInput from '../atoms/MessageInput'
 import MessageList from '../atoms/MessageList'
-import { seedMessages } from '@/app/seeds/MessageSeeds'
 import { Message } from '@/app/interfaces/Message'
 import { useAuth } from '@/store/useAuth'
 import { chatApi } from '@/utils/api'
-import Messages from '@/app/messages/page'
 
 type Props = { roomId: string }
 
 const MessageField = ({ roomId }: Props) => {
-  const  { userId } = useAuth()
+  const  { userId, token, hydrate, loading: authLoading } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate])
   
   useEffect(() => {
-    if(!userId || !roomId) return
+    if(authLoading || !userId || !token || !roomId) return
     setLoading(true)
-    chatApi.history(userId, roomId)
+    chatApi.history(token, roomId)
     .then((res) => {
         const mapped = res.map((m: any) => ({
           id: m.id,
           userId: m.senderId,
           message: m.content,
           postedAt: new Date(m.createdAt),
-      }))
+      })).sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime())
       setMessages(mapped)
     })
-    .finally(() => setLoading(false))
     .catch(console.error)
-  }, [userId, roomId])
+    .finally(() => setLoading(false))
+  }, [userId, token, roomId, authLoading])
 
   const addMessage = async (text: string) => {
-    if (!text.trim() || !userId || !roomId) return
-    const created = await chatApi.sendMessage(userId, roomId, text)
+    if (!text.trim() || !userId || !token || !roomId) return
+    const created = await chatApi.sendMessage(token, roomId, text)
     setMessages((prev) => [...prev, {
       id: created.id,
       userId: created.senderId,
       message: created.content,
       postedAt: new Date(created.createdAt),
-    }])
+    }].sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime()))
   }
 
   return (
@@ -52,7 +54,7 @@ const MessageField = ({ roomId }: Props) => {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <MessageList messages={messages} currentUser={userId} />
+        <MessageList messages={messages} currentUser={userId ?? ''} />
       </div>
 
       <div className="shrink-0">

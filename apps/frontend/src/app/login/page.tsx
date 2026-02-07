@@ -1,25 +1,53 @@
 "use client"
 
 import Image from 'next/image'
-import React, { use, useState } from 'react'
-import { LoginUser, seedUser } from '../seeds/LoginUserSeed';
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/store/useAuth';
+import { useUserStore } from '@/store/userStore';
 
 const Login = () => {
   const router = useRouter();
+  const { setAuth, hydrate, userId, loading } = useAuth();
+  const { setUser } = useUserStore();
 
   const [name, SetName] = useState("");
   const [pass, SetPass] = useState("");
   const [error, SetError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    const user = seedUser.find((u) => (u.name === name || u.email === name) && u.pass === pass)
-
-    if(user) {
-      router.push("/home")
+  useEffect(() => { hydrate(); }, [hydrate]);
+  useEffect(() => {
+    if(!loading && userId) {
+      router.push("/home");
     }
-    else {
-      SetError("名前 / メールアドレス または パスワードが違います")
+  }, [loading, userId, router]);
+
+  const handleLogin = async () => {
+    SetError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password: pass }),
+      });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.message ?? "名前 / メールアドレス または パスワードが違います");
+
+      setAuth(data.accessToken, data.user.id);
+      setUser({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        profileImage: data.user.profileImage,
+        pass: ''
+      });
+      router.push("/home");
+    } catch (e:any) {
+      SetError(e.message ?? "名前 / メールアドレス または パスワードが違います");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -66,8 +94,8 @@ const Login = () => {
 
           {error && (<p className='text-red-500 text-sm mb-4'>{error}</p>)}
 
-          <button onClick={handleLogin} className="w-full bg-[#F8574A] text-white py-3 rounded-full text-lg mb-4 font-bold">
-            Login
+          <button onClick={handleLogin} disabled={submitting} className="w-full bg-[#F8574A] text-white py-3 rounded-full text-lg mb-4 font-bold disabled:opacity-60">
+            {submitting ? "Loading..." : "Login"}
           </button>
 
           <div className="text-sm text-gray-600">

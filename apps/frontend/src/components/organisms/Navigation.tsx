@@ -3,9 +3,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/store/useAuth'
 
 const Navigation = () => {
   const router = useRouter();
+  const { clear } = useAuth();
+
   return (
     <aside className="w-64 h-screen bg-white shadow-md flex flex-col">
       <div className="flex flex-col items-center py-6 border-b border-[#DDDDDD]">
@@ -40,7 +43,7 @@ const Navigation = () => {
           設定
         </Link>
 
-        <button onClick={() => router.push("/login")} className="block hover:underline text-white">
+        <button onClick={() => { clear(); router.push("/login") }} className="block hover:underline text-white">
           ログアウト
         </button>
       </div>

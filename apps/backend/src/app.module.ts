@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -13,7 +13,6 @@ import { USER_REPOSITORY } from './domains/repositories/user.repository.interfac
 import { UserRepository } from './infrastructures/repositories/user.repository';
 import { USER_DELETE_SERVICE } from './applications/interfaces/user-delete.interface';
 import { UserDeleteService } from './applications/services/user-delete.service';
-import { UserIdMiddleware } from './auth/user-id/user-id.middleware';
 import { CHAT_ROOM_REPOSITORY } from './domains/repositories/chat-room.repository.interface';
 import { CHAT_ROOM_SERVICE } from './applications/interfaces/chat-room.service.interface';
 import { ChatRoomService } from './applications/services/chat-room.service';
@@ -22,10 +21,14 @@ import { MessageService } from './applications/services/message.service';
 import { ChatRoomRepository } from './infrastructures/repositories/chat-room.repository';
 import { MESSAGE_REPOSITORY } from './domains/repositories/message.repository.interface';
 import { MessageRepository } from './infrastructures/repositories/message.repository';
-import { ChatController } from './presentations/controllers/chat.contoller';
+import { ChatController } from './presentations/controllers/chat.controller';
+import { AuthModule } from './auth/auth.module';
+import { USER_GET_SERVICE } from './applications/interfaces/user-get.interface';
+import { UserGetService } from './applications/services/user-get.service';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true
     })
@@ -41,6 +44,7 @@ import { ChatController } from './presentations/controllers/chat.contoller';
     { provide: TEST_GET_SERVICE, useClass: TestGetService,},
     { provide: USER_POST_SERVICE, useClass: UserPostService },
     { provide: USER_DELETE_SERVICE, useClass: UserDeleteService },
+    { provide: USER_GET_SERVICE, useClass: UserGetService },
     { provide: CHAT_ROOM_SERVICE, useClass: ChatRoomService },
     { provide: MESSAGE_SERVICE, useClass: MessageService },
 
@@ -49,10 +53,4 @@ import { ChatController } from './presentations/controllers/chat.contoller';
     { provide: MESSAGE_REPOSITORY, useClass: MessageRepository }
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UserIdMiddleware)
-      .forRoutes({ path: 'chat/*', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}

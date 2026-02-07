@@ -28,4 +28,65 @@ export class UserRepository implements IUserRepository {
         const {count} = await this.prisma.user.deleteMany({ where: {name, email} })
         return count;
     }
+
+    async findByName(name: string): Promise<User | null> {
+        const user = await this.prisma.user.findFirst({ where: { name } });
+        if(!user) return null;
+        return new User(
+            user.id,
+            user.email,
+            user.name,
+            user.password,
+            user.profileImage,
+            user.createdAt,
+            user.updatedAt,
+        );
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        const user = await this.prisma.user.findFirst({ where: { email } });
+        if(!user) return null;
+        return new User(
+            user.id,
+            user.email,
+            user.name,
+            user.password,
+            user.profileImage,
+            user.createdAt,
+            user.updatedAt,
+        );
+    }
+
+    async findById(id: string): Promise<User | null> {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if(!user) return null;
+        return new User(
+            user.id,
+            user.email,
+            user.name,
+            user.password,
+            user.profileImage,
+            user.createdAt,
+            user.updatedAt,
+        );
+    }
+
+    async findAll(excludeUserId?: string): Promise<User[]> {
+        const users = await this.prisma.user.findMany({
+            where: excludeUserId ? { id: { not: excludeUserId } } : undefined,
+            orderBy: { createdAt: 'asc' },
+        });
+        return users.map(
+            (user) =>
+                new User(
+                    user.id,
+                    user.email,
+                    user.name,
+                    user.password,
+                    user.profileImage,
+                    user.createdAt,
+                    user.updatedAt,
+                ),
+        );
+    }
 }

@@ -4,7 +4,6 @@ import SubHeader from "@/components/atoms/SubHeader"
 import Image from "next/image";
 import MessageInput from "@/components/atoms/MessageInput";
 import MessageField from "@/components/ui/MessageField";
-import MessageDetails from "./chat/page";
 import HomePage from "./home/page";
 import EventDetails from "./events/[id]/page";
 import Login from "./login/page";
