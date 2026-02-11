@@ -10,6 +10,8 @@ type AuthState = {
 };
 
 const STORAGE_KEY = 'ichariba-auth';
+const STORAGE_VERSION = 'v2';
+const SESSION_HOURS = 12;
 
 export const useAuth = create<AuthState>((set) => ({
   token: null,
@@ -17,7 +19,8 @@ export const useAuth = create<AuthState>((set) => ({
   loading: true,
   setAuth: (token, userId) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, userId }));
+      const expiresAt = Date.now() + SESSION_HOURS * 60 * 60 * 1000;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, userId, version: STORAGE_VERSION, expiresAt }));
     }
     set({ token, userId, loading: false });
   },
@@ -33,6 +36,12 @@ export const useAuth = create<AuthState>((set) => ({
     if (!stored) return set({ loading: false });
     try {
       const parsed = JSON.parse(stored);
+      const expired = !parsed.expiresAt || parsed.expiresAt < Date.now();
+      const versionMismatch = parsed.version !== STORAGE_VERSION;
+      if (expired || versionMismatch) {
+        localStorage.removeItem(STORAGE_KEY);
+        return set({ token: null, userId: null, loading: false });
+      }
       set({
         token: parsed.token ?? null,
         userId: parsed.userId ?? null,

@@ -1,19 +1,24 @@
 "use client";
-import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { useAuth } from '@/store/useAuth';
-import { chatApi, userApi } from '@/utils/api';
-import { User } from '@/app/interfaces/User';
+import { useAuth } from "@/store/useAuth";
+import { chatApi } from "@/utils/api";
 
 type ThreadItem = {
   id: string;
   name: string;
   profile: string;
-  type: 'new' | 'viewed';
+  avatar?: string | null;
+  type: "new" | "viewed";
   color: string;
   roomId?: string;
   partnerId: string;
+};
+
+const trimPreview = (text: string, limit = 50) => {
+  if (!text) return "";
+  return text.length > limit ? `${text.slice(0, limit)}…` : text;
 };
 
 const MessagesField = () => {
@@ -34,42 +39,18 @@ const MessagesField = () => {
       setLoading(true);
       try {
         const rooms = await chatApi.listRooms(token);
-        let mapped: ThreadItem[] = rooms.map((room: any) => ({
-          id: room.roomId,
-          name: room.partner?.name ?? 'Unknown',
-          profile: room.latestMessage?.content ?? '縺ゅｊ縺ｮ繝｡繝・そ繝ｼ繧ｸ繧呈ｱ縺ｲ蜃ｺ縺励ｇ縺・',
-          type: room.latestMessage && room.latestMessage.senderId !== userId ? 'new' : 'viewed',
-          color: room.latestMessage && room.latestMessage.senderId !== userId ? 'bg-[#00D957]' : 'bg-[#FF9E9E]',
-          roomId: room.roomId,
-          partnerId: room.partner?.id ?? '',
-        })).filter((room: ThreadItem) => room.partnerId);
-
-        if (mapped.length === 0) {
-          const users: User[] = await userApi.list(token);
-          const others = users.filter((u) => u.id !== userId);
-          if (others[0]) {
-            await chatApi.createdRoom(token, others[0].id);
-            const refreshed = await chatApi.listRooms(token);
-            mapped = refreshed.map((room: any) => ({
-              id: room.roomId,
-              name: room.partner?.name ?? 'Unknown',
-              profile: room.latestMessage?.content ?? '縺ゅｊ縺ｮ繝｡繝・そ繝ｼ繧ｸ繧呈ｱ縺ｲ蜃ｺ縺励ｇ縺・',
-              type: room.latestMessage && room.latestMessage.senderId !== userId ? 'new' : 'viewed',
-              color: room.latestMessage && room.latestMessage.senderId !== userId ? 'bg-[#00D957]' : 'bg-[#FF9E9E]',
-              roomId: room.roomId,
-              partnerId: room.partner?.id ?? '',
-            })).filter((room: ThreadItem) => room.partnerId);
-          } else {
-            mapped = others.map((u, idx) => ({
-              id: u.id,
-              name: u.name,
-              profile: u.email ?? '',
-              type: 'new',
-              color: idx % 2 === 0 ? 'bg-[#00D957]' : 'bg-[#FF9E9E]',
-              partnerId: u.id,
-            }));
-          }
-        }
+        const mapped: ThreadItem[] = rooms
+          .map((room: any) => ({
+            id: room.roomId,
+            name: room.partner?.name ?? "Unknown",
+            profile: trimPreview(room.latestMessage?.content ?? ""),
+            avatar: room.partner?.profileImage ?? null,
+            type: room.latestMessage && room.latestMessage.senderId !== userId ? "new" : "viewed",
+            color: room.latestMessage && room.latestMessage.senderId !== userId ? "bg-[#00D957]" : "bg-[#FF9E9E]",
+            roomId: room.roomId,
+            partnerId: room.partner?.id ?? "",
+          }))
+          .filter((room: ThreadItem) => room.partnerId);
 
         setItems(mapped);
       } catch (e) {
@@ -84,8 +65,8 @@ const MessagesField = () => {
   const filteredMessages = useMemo(() => {
     return items.filter((msg) => {
       if (!activeNew && !activeWatch) return true;
-      if (activeNew && msg.type === 'new') return true;
-      if (activeWatch && msg.type === 'viewed') return true;
+      if (activeNew && msg.type === "new") return true;
+      if (activeWatch && msg.type === "viewed") return true;
       return false;
     });
   }, [items, activeNew, activeWatch]);
@@ -105,15 +86,15 @@ const MessagesField = () => {
       <div>
         <button
           onClick={() => setActiveNew(!activeNew)}
-          className={`w-30 py-1 rounded-full text-white m-5 cursor-pointer ${activeNew ? 'bg-[#3BB1FF]' : 'bg-[#D9D9D9]'}`}
+          className={`w-30 py-1 rounded-full text-white m-5 cursor-pointer ${activeNew ? "bg-[#3BB1FF]" : "bg-[#D9D9D9]"}`}
         >
-          譁ｰ逹
+          未返信
         </button>
         <button
           onClick={() => setActiveWatch(!activeWatch)}
-          className={`w-30 py-1 rounded-full text-white cursor-pointer ${activeWatch ? 'bg-[#3BB1FF]' : 'bg-[#D9D9D9]'}`}
+          className={`w-30 py-1 rounded-full text-white cursor-pointer ${activeWatch ? "bg-[#3BB1FF]" : "bg-[#D9D9D9]"}`}
         >
-          髢ｲ隕ｧ貂医∩
+          返信済み
         </button>
       </div>
       <div>
@@ -125,18 +106,18 @@ const MessagesField = () => {
                 <div className={`${msg.color} h-30 w-3 mr-2`}></div>
                 <div className="bg-white flex flex-1 items-center px-8">
                   <div className="rounded-full h-15 w-15 bg-[#D9D9D9] overflow-hidden">
-                    <img src="/icons/chari-love.jpg" alt={msg.name} className="w-full h-full object-cover" />
+                    <img src={msg.avatar || "/icons/chari-love.jpg"} alt={msg.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="pl-10">
                     <h2 className="text-xl font-bold">{msg.name}</h2>
-                    <p className="text-[#7B7B7B]">{msg.profile || '縺薙％縺九ｉ繝｡繝・そ繝ｼ繧ｸ縺悟ｭｭ蛻昴・・'}</p>
+                    <p className="text-[#7B7B7B]">{msg.profile || "メッセージを送ってみましょう"}</p>
                   </div>
                 </div>
               </div>
             </div>
           ))}
         {!loading && filteredMessages.length === 0 && (
-          <p className="text-gray-500 px-6">繝｡繝・そ繝ｼ繧ｸ荳隕ｧ縺ｮ繝ｦ繝ｼ繧ｶ繝ｼ縺後↑縺・→縺阪↑縺薙ｌ縺ｰ縺ゅｊ縺ｮ繝ｫ繝ｼ繝繧貞岼蟾･縺吶ｋ縺・</p>
+          <p className="text-gray-500 px-6">表示できるメッセージがありません</p>
         )}
       </div>
     </div>

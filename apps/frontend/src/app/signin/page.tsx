@@ -42,9 +42,11 @@ const SignIn = () => {
         name: data.user.name,
         email: data.user.email,
         profileImage: data.user.profileImage,
+        career: data.user.career,
+        intro: data.user.intro,
         pass: ''
       });
-      router.push("/home");
+      router.push("/setting");
     } catch (e:any) {
       setError(e.message ?? "登録に失敗しました");
     } finally {

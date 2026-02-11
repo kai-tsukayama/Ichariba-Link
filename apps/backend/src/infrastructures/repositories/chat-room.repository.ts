@@ -46,7 +46,7 @@ export class ChatRoomRepository implements IChatRoomRepository {
             select: {
                 userId: true,
                 user: {
-                select: { id: true, name: true, profileImage: true },
+                select: { id: true, name: true, profileImage: true, career: true, intro: true },
                 },
             },
             },

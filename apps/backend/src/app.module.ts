@@ -25,6 +25,8 @@ import { ChatController } from './presentations/controllers/chat.controller';
 import { AuthModule } from './auth/auth.module';
 import { USER_GET_SERVICE } from './applications/interfaces/user-get.interface';
 import { UserGetService } from './applications/services/user-get.service';
+import { USER_UPDATE_SERVICE } from './applications/interfaces/user-update.interface';
+import { UserUpdateService } from './applications/services/user-update.service';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { UserGetService } from './applications/services/user-get.service';
     { provide: USER_POST_SERVICE, useClass: UserPostService },
     { provide: USER_DELETE_SERVICE, useClass: UserDeleteService },
     { provide: USER_GET_SERVICE, useClass: UserGetService },
+    { provide: USER_UPDATE_SERVICE, useClass: UserUpdateService },
     { provide: CHAT_ROOM_SERVICE, useClass: ChatRoomService },
     { provide: MESSAGE_SERVICE, useClass: MessageService },
 

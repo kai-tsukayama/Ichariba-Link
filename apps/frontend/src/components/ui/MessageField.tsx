@@ -14,23 +14,34 @@ const MessageField = ({ roomId }: Props) => {
   const  { userId, token, hydrate, loading: authLoading } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
+  const [partnerAvatar, setPartnerAvatar] = useState<string | null>(null)
+  const [partnerName, setPartnerName] = useState<string>("")
 
   useEffect(() => {
     hydrate();
   }, [hydrate])
-  
+
   useEffect(() => {
     if(authLoading || !userId || !token || !roomId) return
     setLoading(true)
-    chatApi.history(token, roomId)
-    .then((res) => {
-        const mapped = res.map((m: any) => ({
-          id: m.id,
-          userId: m.senderId,
-          message: m.content,
-          postedAt: new Date(m.createdAt),
-      })).sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime())
+    Promise.all([
+      chatApi.history(token, roomId),
+      chatApi.listRooms(token)
+    ])
+    .then(([history, rooms]) => {
+      const mapped = history.map((m: any) => ({
+        id: m.id,
+        userId: m.senderId,
+        message: m.content,
+        postedAt: new Date(m.createdAt),
+      })).sort((a:any, b: any) => a.postedAt.getTime() - b.postedAt.getTime())
       setMessages(mapped)
+
+      const room = rooms.find((r: any) => r.roomId === roomId);
+      if (room?.partner) {
+        if (room.partner.profileImage) setPartnerAvatar(room.partner.profileImage);
+        if (room.partner.name) setPartnerName(room.partner.name);
+      }
     })
     .catch(console.error)
     .finally(() => setLoading(false))
@@ -50,11 +61,11 @@ const MessageField = ({ roomId }: Props) => {
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="shrink-0">
-        <SubHeader />
+        <SubHeader title={partnerName} />
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <MessageList messages={messages} currentUser={userId ?? ''} />
+        <MessageList messages={messages} currentUser={userId ?? ''} partnerAvatar={partnerAvatar} />
       </div>
 
       <div className="shrink-0">

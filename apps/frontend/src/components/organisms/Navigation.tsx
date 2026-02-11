@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/store/useAuth'
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/store/useAuth";
 
 const Navigation = () => {
   const router = useRouter();
@@ -24,15 +24,31 @@ const Navigation = () => {
         <p className="text-sm text-gray-500 mb-4">メニュー</p>
 
         <nav className="space-y-4">
-          <Link href="/messages" className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white">
-            メッセージ
+          <Link
+            href="/messages"
+            className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white"
+          >
+            メッセージ一覧
           </Link>
 
-          <Link href="/home" className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white">
+          <Link
+            href="/home"
+            className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white"
+          >
             イベント一覧
           </Link>
 
-          <Link href="/events/create" className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white">
+          <Link
+            href="/friends"
+            className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white"
+          >
+            友達を探す
+          </Link>
+
+          <Link
+            href="/events/create"
+            className="block text-gray-700 px-6 py-3 rounded-xl transition hover:bg-[#00D957] hover:text-white"
+          >
             イベント作成
           </Link>
         </nav>
@@ -43,12 +59,18 @@ const Navigation = () => {
           設定
         </Link>
 
-        <button onClick={() => { clear(); router.push("/login") }} className="block hover:underline text-white">
+        <button
+          onClick={() => {
+            clear();
+            router.push("/login");
+          }}
+          className="block hover:underline text-white"
+        >
           ログアウト
         </button>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Navigation
+export default Navigation;

@@ -36,4 +36,6 @@ export const chatApi = {
 export const userApi = {
     list: (token: string) =>
         api("/User", { token }),
+    update: (token: string, body: any) =>
+        api("/User", { method: "PATCH", token, body }),
 };

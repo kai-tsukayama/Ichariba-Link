@@ -17,6 +17,8 @@ export class UserRepository implements IUserRepository {
             created.name,
             created.password,
             created.profileImage,
+            created.career ?? null,
+            created.intro ?? null,
             created.createdAt,
             created.updatedAt,
         );
@@ -38,6 +40,8 @@ export class UserRepository implements IUserRepository {
             user.name,
             user.password,
             user.profileImage,
+            user.career ?? null,
+            user.intro ?? null,
             user.createdAt,
             user.updatedAt,
         );
@@ -52,6 +56,8 @@ export class UserRepository implements IUserRepository {
             user.name,
             user.password,
             user.profileImage,
+            user.career ?? null,
+            user.intro ?? null,
             user.createdAt,
             user.updatedAt,
         );
@@ -66,6 +72,8 @@ export class UserRepository implements IUserRepository {
             user.name,
             user.password,
             user.profileImage,
+            user.career ?? null,
+            user.intro ?? null,
             user.createdAt,
             user.updatedAt,
         );
@@ -84,9 +92,29 @@ export class UserRepository implements IUserRepository {
                     user.name,
                     user.password,
                     user.profileImage,
+                    user.career ?? null,
+                    user.intro ?? null,
                     user.createdAt,
                     user.updatedAt,
                 ),
+        );
+    }
+
+    async update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; }): Promise<User> {
+        const updated = await this.prisma.user.update({
+            where: { id },
+            data,
+        });
+        return new User(
+            updated.id,
+            updated.email,
+            updated.name,
+            updated.password,
+            updated.profileImage,
+            updated.career ?? null,
+            updated.intro ?? null,
+            updated.createdAt,
+            updated.updatedAt,
         );
     }
 }

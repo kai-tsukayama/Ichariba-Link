@@ -29,6 +29,8 @@ export class ChatRoomService implements IChatRoomService {
                     id: partner.user.id,
                     name: partner.user.name,
                     profileImage: partner.user.profileImage,
+                    career: partner.user.career,
+                    intro: partner.user.intro,
                 } : null,
                 latestMessage: latest ? {
                     id: latest.id,

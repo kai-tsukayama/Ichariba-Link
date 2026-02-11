@@ -5,6 +5,8 @@ export class User {
         public readonly name: string,
         public readonly password: string,
         public readonly profileImage: string | null,
+        public readonly career: string | null,
+        public readonly intro: string | null,
         public readonly createAt: Date,
         public readonly updateAt: Date,
     ){}

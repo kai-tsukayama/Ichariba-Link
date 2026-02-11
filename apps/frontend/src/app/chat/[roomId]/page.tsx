@@ -24,9 +24,6 @@ const MessageDetails = () => {
         <div className="flex h-screen">
           <Navigation />
           <div className="flex-1 flex flex-col px-1">
-            <div className="shrink-0">
-              <Header title="繝｡繝・そ繝ｼ繧ｸ" />
-            </div>
             <div className='flex-1 overflow-y-auto'>
               <MessageField roomId={roomId as string} />
             </div>
