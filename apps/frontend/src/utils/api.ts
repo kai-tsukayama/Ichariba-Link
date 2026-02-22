@@ -39,3 +39,12 @@ export const userApi = {
     update: (token: string, body: any) =>
         api("/User", { method: "PATCH", token, body }),
 };
+
+export const eventApi = {
+    list: (token?: string) =>
+        api("/events", { token }),
+    create: (token: string, body: any) =>
+        api("/events", { method: "POST", token, body }),
+    detail: (id: string, token?: string) =>
+        api(`/events/${id}`, { token }),
+};

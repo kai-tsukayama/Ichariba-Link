@@ -11,45 +11,25 @@ type AuthState = {
 
 const STORAGE_KEY = 'ichariba-auth';
 const STORAGE_VERSION = 'v2';
-const SESSION_HOURS = 12;
+const SESSION_HOURS = 0; // persistence無効化
 
 export const useAuth = create<AuthState>((set) => ({
   token: null,
   userId: null,
   loading: true,
   setAuth: (token, userId) => {
-    if (typeof window !== 'undefined') {
-      const expiresAt = Date.now() + SESSION_HOURS * 60 * 60 * 1000;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, userId, version: STORAGE_VERSION, expiresAt }));
-    }
+    // 永続化しない：起動・リロード時は毎回ログインを要求
     set({ token, userId, loading: false });
   },
   clear: () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEY);
     set({ token: null, userId: null, loading: false });
   },
   hydrate: () => {
-    if (typeof window === 'undefined') return;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return set({ loading: false });
-    try {
-      const parsed = JSON.parse(stored);
-      const expired = !parsed.expiresAt || parsed.expiresAt < Date.now();
-      const versionMismatch = parsed.version !== STORAGE_VERSION;
-      if (expired || versionMismatch) {
-        localStorage.removeItem(STORAGE_KEY);
-        return set({ token: null, userId: null, loading: false });
-      }
-      set({
-        token: parsed.token ?? null,
-        userId: parsed.userId ?? null,
-        loading: false,
-      });
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-      set({ token: null, userId: null, loading: false });
-    }
+    // 永続化を行わないが、既にメモリ上にトークンがある場合はそれを保持
+    set((state) => {
+      if (state.token) return { loading: false };
+      return { token: null, userId: null, loading: false };
+    });
   },
 }));

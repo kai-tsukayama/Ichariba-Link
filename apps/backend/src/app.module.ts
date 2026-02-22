@@ -27,6 +27,12 @@ import { USER_GET_SERVICE } from './applications/interfaces/user-get.interface';
 import { UserGetService } from './applications/services/user-get.service';
 import { USER_UPDATE_SERVICE } from './applications/interfaces/user-update.interface';
 import { UserUpdateService } from './applications/services/user-update.service';
+import { EVENT_SERVICE } from './applications/interfaces/event-service.interface';
+import { EventService } from './applications/services/event.service';
+import { EVENT_REPOSITORY } from './domains/repositories/event.repository.interface';
+import { EventRepository } from './infrastructures/repositories/event.repository';
+import { EventController } from './presentations/controllers/event.controller';
+import { ChatGateway } from './presentations/gateways/chat.gateway';
 
 @Module({
   imports: [
@@ -39,7 +45,8 @@ import { UserUpdateService } from './applications/services/user-update.service';
     AppController,
     TestContoller,
     UserController,
-    ChatController
+    ChatController,
+    EventController,
   ],
   providers: [
     AppService, PrismaService,
@@ -53,7 +60,10 @@ import { UserUpdateService } from './applications/services/user-update.service';
 
     { provide: USER_REPOSITORY, useClass: UserRepository },
     { provide: CHAT_ROOM_REPOSITORY, useClass: ChatRoomRepository },
-    { provide: MESSAGE_REPOSITORY, useClass: MessageRepository }
+    { provide: MESSAGE_REPOSITORY, useClass: MessageRepository },
+    { provide: EVENT_SERVICE, useClass: EventService },
+    { provide: EVENT_REPOSITORY, useClass: EventRepository },
+    ChatGateway,
   ],
 })
 export class AppModule {}

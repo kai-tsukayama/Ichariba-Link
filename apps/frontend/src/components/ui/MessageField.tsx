@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import SubHeader from '../atoms/SubHeader'
 import MessageInput from '../atoms/MessageInput'
 import MessageList from '../atoms/MessageList'
 import { Message } from '@/app/interfaces/Message'
 import { useAuth } from '@/store/useAuth'
 import { chatApi } from '@/utils/api'
+import { io, Socket } from 'socket.io-client'
 
 type Props = { roomId: string }
 
@@ -16,10 +17,26 @@ const MessageField = ({ roomId }: Props) => {
   const [loading, setLoading] = useState(false)
   const [partnerAvatar, setPartnerAvatar] = useState<string | null>(null)
   const [partnerName, setPartnerName] = useState<string>("")
+  const socketRef = useRef<Socket | null>(null)
+
+  const socketUrl = useMemo(
+    () => process.env.NEXT_PUBLIC_SOCKET_URL ?? process.env.NEXT_PUBLIC_API_BASE ?? '',
+    [],
+  )
 
   useEffect(() => {
     hydrate();
   }, [hydrate])
+
+  const upsertMessage = useCallback((incoming: Message) => {
+    setMessages((prev) => {
+      const exists = prev.find((m) => m.id === incoming.id);
+      const next = exists
+        ? prev.map((m) => (m.id === incoming.id ? incoming : m))
+        : [...prev, incoming];
+      return next.sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime());
+    });
+  }, []);
 
   useEffect(() => {
     if(authLoading || !userId || !token || !roomId) return
@@ -47,15 +64,52 @@ const MessageField = ({ roomId }: Props) => {
     .finally(() => setLoading(false))
   }, [userId, token, roomId, authLoading])
 
+  useEffect(() => {
+    if (authLoading || !token || !roomId || !socketUrl) return;
+
+    const socket = io(socketUrl, {
+      transports: ['websocket'],
+      auth: { token },
+    });
+    socketRef.current = socket;
+
+    const handleIncoming = (payload: {
+      id: string;
+      roomId: string;
+      content: string;
+      senderId: string;
+      createdAt: string | Date;
+    }) => {
+      if (payload.roomId !== roomId) return;
+      upsertMessage({
+        id: payload.id,
+        userId: payload.senderId,
+        message: payload.content,
+        postedAt: new Date(payload.createdAt),
+      });
+    };
+
+    socket.on('connect', () => {
+      socket.emit('join', { roomId });
+    });
+    socket.on('message', handleIncoming);
+
+    return () => {
+      socket.off('message', handleIncoming);
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [authLoading, roomId, socketUrl, token, upsertMessage])
+
   const addMessage = async (text: string) => {
     if (!text.trim() || !userId || !token || !roomId) return
     const created = await chatApi.sendMessage(token, roomId, text)
-    setMessages((prev) => [...prev, {
+    upsertMessage({
       id: created.id,
       userId: created.senderId,
       message: created.content,
       postedAt: new Date(created.createdAt),
-    }].sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime()))
+    })
   }
 
   return (

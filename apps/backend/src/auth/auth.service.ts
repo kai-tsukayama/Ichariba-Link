@@ -36,7 +36,9 @@ export class AuthService {
   }
 
   async login(dto: LoginRequestDto): Promise<AuthResponse> {
-    const user = await this.users.findByName(dto.name);
+    const user =
+      (await this.users.findByName(dto.name)) ??
+      (await this.users.findByEmail(dto.name)); // フロントの「Name or Email」入力に対応
     if (!user) throw new UnauthorizedException("invalid credentials");
     const ok = await bcrypt.compare(dto.password, user.password);
     if (!ok) throw new UnauthorizedException("invalid credentials");

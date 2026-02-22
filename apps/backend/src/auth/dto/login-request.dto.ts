@@ -4,7 +4,7 @@ import { IsString, MinLength } from "class-validator";
 export class LoginRequestDto {
   @ApiProperty()
   @IsString()
-  name: string;
+  name: string; // name または email を受け付ける
 
   @ApiProperty()
   @IsString()

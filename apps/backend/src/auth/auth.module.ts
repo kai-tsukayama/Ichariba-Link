@@ -29,6 +29,6 @@ import { PrismaService } from "src/infrastructures/prisma/prisma.service";
     PrismaService,
     { provide: USER_REPOSITORY, useClass: UserRepository },
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
