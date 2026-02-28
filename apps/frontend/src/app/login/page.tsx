@@ -48,8 +48,7 @@ const Login = () => {
         badgeKey: data.user.badgeKey,
         pass: ''
       });
-      const needsSetup = !data.user.baseLocation || !data.user.residenceTerm;
-      router.push(needsSetup ? "/setting" : "/home");
+      router.push("/home");
     } catch (e:any) {
       SetError(e.message ?? "名前 / メールアドレス または パスワードが違います");
     } finally {

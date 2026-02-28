@@ -49,7 +49,7 @@ const SignIn = () => {
         badgeKey: data.user.badgeKey,
         pass: ''
       });
-      router.push("/setting");
+      router.push("/home");
     } catch (e:any) {
       setError(e.message ?? "登録に失敗しました");
     } finally {
