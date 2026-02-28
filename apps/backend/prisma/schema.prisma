@@ -12,6 +12,14 @@ datasource db {
   provider = "sqlite"
 }
 
+enum ResidenceTerm {
+  CONSIDERING
+  LT_1M
+  LT_1Y
+  Y1_3
+  GTE_3Y
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -20,6 +28,8 @@ model User {
   profileImage String?
   career    String?
   intro     String?
+  baseLocation String?
+  residenceTerm ResidenceTerm?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useRef, useState } from "react";
 import { useUserStore } from "@/store/userStore";
 import { useAuth } from "@/store/useAuth";
@@ -13,6 +13,8 @@ const SettingProfile = () => {
   const [email, setEmail] = useState<string>(currentUser?.email ?? "");
   const [career, setCareer] = useState<string>(currentUser?.career ?? "");
   const [intro, setIntro] = useState<string>(currentUser?.intro ?? "");
+  const [baseLocation, setBaseLocation] = useState<string>(currentUser?.baseLocation ?? "");
+  const [residenceTerm, setResidenceTerm] = useState<string>(currentUser?.residenceTerm ?? "");
   const [previewImage, setPreviewImage] = useState<string | undefined>(currentUser.profileImage);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,11 @@ const SettingProfile = () => {
 
   const handleSave = async () => {
     if (!token) {
-      setError("ログイン情報がありません");
+      setError("ログイン情報が見つかりません");
+      return;
+    }
+    if (!baseLocation.trim() || !residenceTerm) {
+      setError("拠点と居住期間を入力してください");
       return;
     }
     if (career.length > 100) {
@@ -49,6 +55,8 @@ const SettingProfile = () => {
         email,
         career,
         intro,
+        baseLocation,
+        residenceTerm: residenceTerm || null,
         profileImage: previewImage ?? null,
       };
       const updated = await userApi.update(token, payload);
@@ -83,7 +91,7 @@ const SettingProfile = () => {
             onClick={handleUploadClick}
             className="w-40 p-2 bg-[#F8574A] text-white rounded-full mt-6 cursor-pointer hover:bg-[#ff6b5f] transition-colors"
           >
-            アイコンをアップロード
+            画像をアップロード
           </button>
         </div>
         <div className="flex-1 text-start">
@@ -111,7 +119,28 @@ const SettingProfile = () => {
             maxLength={100}
             className="w-full border border-gray-300 rounded-xl p-3 mb-6 outline-none bg-transparent h-24"
           />
-          <h2 className="text-gray-600 font-bold text-2xl">一言</h2>
+          <h2 className="text-gray-600 font-bold text-2xl">拠点</h2>
+          <input
+            type="text"
+            placeholder="例：沖縄県那覇市 / 東京都内 など"
+            value={baseLocation}
+            onChange={(e) => setBaseLocation(e.target.value)}
+            className="w-full border-b border-gray-300 p-2 mb-6 mt-4 outline-none bg-transparent"
+          />
+          <h2 className="text-gray-600 font-bold text-2xl">居住期間</h2>
+          <select
+            value={residenceTerm}
+            onChange={(e) => setResidenceTerm(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl p-3 mb-6 bg-white"
+          >
+            <option value="">選択してください</option>
+            <option value="CONSIDERING">検討中</option>
+            <option value="LT_1M">移住1か月未満</option>
+            <option value="LT_1Y">1年未満</option>
+            <option value="Y1_3">1〜3年</option>
+            <option value="GTE_3Y">3年以上</option>
+          </select>
+          <h2 className="text-gray-600 font-bold text-2xl">自己紹介</h2>
           <input
             type="text"
             placeholder="ひとこと自己紹介"

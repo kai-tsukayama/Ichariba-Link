@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import { IsEmail, IsIn, IsOptional, IsString, MinLength } from "class-validator";
 
 export class UserUpdateRequest {
   @ApiProperty({ required: false })
@@ -32,4 +32,15 @@ export class UserUpdateRequest {
   @IsOptional()
   @IsString()
   intro?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  baseLocation?: string | null;
+
+  @ApiProperty({ required: false, enum: ["CONSIDERING", "LT_1M", "LT_1Y", "Y1_3", "GTE_3Y"] })
+  @IsOptional()
+  @IsString()
+  @IsIn(["CONSIDERING", "LT_1M", "LT_1Y", "Y1_3", "GTE_3Y"])
+  residenceTerm?: "CONSIDERING" | "LT_1M" | "LT_1Y" | "Y1_3" | "GTE_3Y";
 }

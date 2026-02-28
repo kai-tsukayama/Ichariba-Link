@@ -8,6 +8,23 @@ import { User } from "src/domains/entities/user.entity";
 
 type AuthResponse = { accessToken: string; user: Omit<User, "password"> };
 
+const termToBadgeKey = (term?: string | null): string | null => {
+  switch (term) {
+    case "CONSIDERING":
+      return "considering";
+    case "LT_1M":
+      return "newcomer_1m";
+    case "LT_1Y":
+      return "newcomer_1y";
+    case "Y1_3":
+      return "settling_in";
+    case "GTE_3Y":
+      return "veteran_member";
+    default:
+      return null;
+  }
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -15,9 +32,9 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  private toSafeUser(user: User): Omit<User, "password"> {
+  private toSafeUser(user: User): Omit<User, "password"> & { badgeKey: string | null } {
     const { password, ...rest } = user;
-    return rest;
+    return { ...rest, badgeKey: termToBadgeKey(user.residenceTerm) };
   }
 
   private sign(user: User): string {

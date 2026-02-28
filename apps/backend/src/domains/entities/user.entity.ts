@@ -7,6 +7,8 @@ export class User {
         public readonly profileImage: string | null,
         public readonly career: string | null,
         public readonly intro: string | null,
+        public readonly baseLocation: string | null,
+        public readonly residenceTerm: string | null,
         public readonly createAt: Date,
         public readonly updateAt: Date,
     ){}

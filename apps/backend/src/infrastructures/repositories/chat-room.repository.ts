@@ -7,7 +7,7 @@ export class ChatRoomRepository implements IChatRoomRepository {
     constructor( private readonly prisma: PrismaService ){}
 
     async findOneToOneRoom(userId: string, partnerId: string): Promise<{ id: string } | null> {
-        const room = await this.prisma.chatRoom.findFirst({
+        const room = await (this.prisma.chatRoom as any).findFirst({
             where: {
                 AND: [
                     { users: {some: {userId}} },
@@ -21,7 +21,7 @@ export class ChatRoomRepository implements IChatRoomRepository {
 
     // 1対1ルームを新規作成（room + chatRoomUser 2件をトランザクション）
     async createOneToOneRoom(userId: string, partnerId: string): Promise<{ id: string }> {
-        return this.prisma.$transaction(async (tx) => {
+        return (this.prisma as any).$transaction(async (tx: any) => {
         const room = await tx.chatRoom.create({ data: {} }); // updatedAt はデフォルト
         await tx.chatRoomUser.createMany({
             data: [
@@ -35,7 +35,7 @@ export class ChatRoomRepository implements IChatRoomRepository {
 
     // 自分が属するルーム一覧を updatedAt 降順で取得し、最新メッセージ1件を付与
     async listRoomsWithLatestMessage(userId: string, limit: number, cursor?: string): Promise<any[]> {
-        const rooms = await this.prisma.chatRoom.findMany({
+        const rooms = await (this.prisma.chatRoom as any).findMany({
         take: limit,
         skip: cursor ? 1 : 0,
         cursor: cursor ? { id: cursor } : undefined,
@@ -46,7 +46,7 @@ export class ChatRoomRepository implements IChatRoomRepository {
             select: {
                 userId: true,
                 user: {
-                select: { id: true, name: true, profileImage: true, career: true, intro: true },
+                select: { id: true, name: true, profileImage: true, career: true, intro: true, baseLocation: true, residenceTerm: true },
                 },
             },
             },

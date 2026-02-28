@@ -44,6 +44,9 @@ const SignIn = () => {
         profileImage: data.user.profileImage,
         career: data.user.career,
         intro: data.user.intro,
+        baseLocation: data.user.baseLocation,
+        residenceTerm: data.user.residenceTerm,
+        badgeKey: data.user.badgeKey,
         pass: ''
       });
       router.push("/setting");

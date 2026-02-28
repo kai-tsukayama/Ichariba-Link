@@ -10,5 +10,14 @@ export interface IUserRepository {
     findByEmail(email: string): Promise<User | null>;
     findById(id: string): Promise<User | null>;
     findAll(excludeUserId?: string): Promise<User[]>;
-    update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; }): Promise<User>;
+    update(
+        id: string,
+        data: Partial<UserPostRequest> & {
+            profileImage?: string | null;
+            career?: string | null;
+            intro?: string | null;
+            baseLocation?: string | null;
+            residenceTerm?: string | null;
+        },
+    ): Promise<User>;
 }

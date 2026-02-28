@@ -3,6 +3,23 @@ import { IChatRoomService } from "../interfaces/chat-room.service.interface";
 import { CHAT_ROOM_REPOSITORY } from "src/domains/repositories/chat-room.repository.interface";
 import type { IChatRoomRepository } from "src/domains/repositories/chat-room.repository.interface";
 
+const termToBadgeKey = (term?: string | null): string | null => {
+    switch (term) {
+        case "CONSIDERING":
+            return "considering";
+        case "LT_1M":
+            return "newcomer_1m";
+        case "LT_1Y":
+            return "newcomer_1y";
+        case "Y1_3":
+            return "settling_in";
+        case "GTE_3Y":
+            return "veteran_member";
+        default:
+            return null;
+    }
+};
+
 @Injectable()
 export class ChatRoomService implements IChatRoomService {
     constructor(
@@ -31,6 +48,9 @@ export class ChatRoomService implements IChatRoomService {
                     profileImage: partner.user.profileImage,
                     career: partner.user.career,
                     intro: partner.user.intro,
+                    baseLocation: partner.user.baseLocation,
+                    residenceTerm: partner.user.residenceTerm,
+                    badgeKey: termToBadgeKey(partner.user.residenceTerm),
                 } : null,
                 latestMessage: latest ? {
                     id: latest.id,

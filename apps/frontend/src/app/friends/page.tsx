@@ -5,6 +5,7 @@ import Navigation from "@/components/organisms/Navigation";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/store/useAuth";
 import { chatApi, userApi } from "@/utils/api";
+import { resolveBadge } from "@/utils/badge";
 import { User } from "@/app/interfaces/User";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -71,8 +72,8 @@ const FriendsPage = () => {
                       key={friend.id}
                       className="bg-white rounded-2xl shadow-md border border-[#E2E8FF] p-6 flex flex-col gap-4 hover:-translate-y-1 transition-transform duration-200"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#EEF3FF] flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-4">
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#EEF3FF] flex items-center justify-center shrink-0">
                           <img
                             src={friend.profileImage || "/icons/ichariba-link.png"}
                             alt={friend.name}
@@ -80,11 +81,24 @@ const FriendsPage = () => {
                             loading="lazy"
                           />
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-lg font-semibold text-[#002365]">
-                            {friend.name}
-                          </p>
-                          <p className="text-sm text-gray-600">{friend.email}</p>
+
+                        <div className="space-y-1 w-full">
+                          <div className="flex items-center justify-between w-full">
+                            <div>
+                              <p className="text-lg font-semibold text-[#002365]">{friend.name}</p>
+                              <p className="text-sm text-gray-600">{friend.email}</p>
+                            </div>
+
+                            {resolveBadge(friend.badgeKey) && (
+                              <div className="flex items-center">
+                                <img
+                                  src={resolveBadge(friend.badgeKey)!.icon}
+                                  alt={resolveBadge(friend.badgeKey)!.label}
+                                  className="w-30 h-30"
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
 

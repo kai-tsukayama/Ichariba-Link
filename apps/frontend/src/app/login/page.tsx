@@ -43,9 +43,13 @@ const Login = () => {
         profileImage: data.user.profileImage,
         career: data.user.career,
         intro: data.user.intro,
+        baseLocation: data.user.baseLocation,
+        residenceTerm: data.user.residenceTerm,
+        badgeKey: data.user.badgeKey,
         pass: ''
       });
-      router.push("/home");
+      const needsSetup = !data.user.baseLocation || !data.user.residenceTerm;
+      router.push(needsSetup ? "/setting" : "/home");
     } catch (e:any) {
       SetError(e.message ?? "名前 / メールアドレス または パスワードが違います");
     } finally {

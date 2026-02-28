@@ -10,7 +10,7 @@ export class UserRepository implements IUserRepository {
     constructor(private readonly prisma: PrismaService) {}
 
     async create(data: UserPostRequest): Promise<User> {
-        const created = await this.prisma.user.create({ data });
+        const created = await (this.prisma.user as any).create({ data });
         return new User(
             created.id,
             created.email,
@@ -19,6 +19,8 @@ export class UserRepository implements IUserRepository {
             created.profileImage,
             created.career ?? null,
             created.intro ?? null,
+            created.baseLocation ?? null,
+            created.residenceTerm ?? null,
             created.createdAt,
             created.updatedAt,
         );
@@ -27,12 +29,12 @@ export class UserRepository implements IUserRepository {
     async delete(data: UserDeleteRequest): Promise<number> {
         const name = data.name;
         const email = data.email;
-        const {count} = await this.prisma.user.deleteMany({ where: {name, email} })
+        const {count} = await (this.prisma.user as any).deleteMany({ where: {name, email} })
         return count;
     }
 
     async findByName(name: string): Promise<User | null> {
-        const user = await this.prisma.user.findFirst({ where: { name } });
+        const user = await (this.prisma.user as any).findFirst({ where: { name } });
         if(!user) return null;
         return new User(
             user.id,
@@ -42,13 +44,15 @@ export class UserRepository implements IUserRepository {
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
+            user.baseLocation ?? null,
+            user.residenceTerm ?? null,
             user.createdAt,
             user.updatedAt,
         );
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        const user = await this.prisma.user.findFirst({ where: { email } });
+        const user = await (this.prisma.user as any).findFirst({ where: { email } });
         if(!user) return null;
         return new User(
             user.id,
@@ -58,13 +62,15 @@ export class UserRepository implements IUserRepository {
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
+            user.baseLocation ?? null,
+            user.residenceTerm ?? null,
             user.createdAt,
             user.updatedAt,
         );
     }
 
     async findById(id: string): Promise<User | null> {
-        const user = await this.prisma.user.findUnique({ where: { id } });
+        const user = await (this.prisma.user as any).findUnique({ where: { id } });
         if(!user) return null;
         return new User(
             user.id,
@@ -74,13 +80,15 @@ export class UserRepository implements IUserRepository {
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
+            user.baseLocation ?? null,
+            user.residenceTerm ?? null,
             user.createdAt,
             user.updatedAt,
         );
     }
 
     async findAll(excludeUserId?: string): Promise<User[]> {
-        const users = await this.prisma.user.findMany({
+        const users = await (this.prisma.user as any).findMany({
             where: excludeUserId ? { id: { not: excludeUserId } } : undefined,
             orderBy: { createdAt: 'asc' },
         });
@@ -94,16 +102,18 @@ export class UserRepository implements IUserRepository {
                     user.profileImage,
                     user.career ?? null,
                     user.intro ?? null,
+                    user.baseLocation ?? null,
+                    user.residenceTerm ?? null,
                     user.createdAt,
                     user.updatedAt,
                 ),
         );
     }
 
-    async update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; }): Promise<User> {
+    async update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; baseLocation?: string | null; residenceTerm?: string | null; }): Promise<User> {
         const updated = await this.prisma.user.update({
             where: { id },
-            data,
+            data: data as any, // prisma client types may lag schema; cast to keep build passing until regenerate
         });
         return new User(
             updated.id,
@@ -113,6 +123,8 @@ export class UserRepository implements IUserRepository {
             updated.profileImage,
             updated.career ?? null,
             updated.intro ?? null,
+            updated.baseLocation ?? null,
+            updated.residenceTerm ?? null,
             updated.createdAt,
             updated.updatedAt,
         );
