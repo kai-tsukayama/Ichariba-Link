@@ -25,6 +25,8 @@ model User {
   email     String   @unique
   name      String
   password  String
+  resetToken String?
+  resetTokenExpires DateTime?
   profileImage String?
   career    String?
   intro     String?

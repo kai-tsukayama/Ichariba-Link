@@ -105,7 +105,7 @@ const Login = () => {
 
           <div className="text-sm text-gray-600">
             Forgot your password?{" "}
-            <span className="text-[#F8574A] cursor-pointer">Click!</span>
+            <span className="text-[#F8574A] cursor-pointer" onClick={() => router.push("/forgot-password")}>Click!</span>
           </div>
 
           <div className="text-sm text-gray-600 mt-2">

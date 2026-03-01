@@ -16,6 +16,8 @@ export class UserRepository implements IUserRepository {
             created.email,
             created.name,
             created.password,
+            created.resetToken ?? null,
+            created.resetTokenExpires ?? null,
             created.profileImage,
             created.career ?? null,
             created.intro ?? null,
@@ -41,6 +43,8 @@ export class UserRepository implements IUserRepository {
             user.email,
             user.name,
             user.password,
+            user.resetToken ?? null,
+            user.resetTokenExpires ?? null,
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
@@ -59,6 +63,8 @@ export class UserRepository implements IUserRepository {
             user.email,
             user.name,
             user.password,
+            user.resetToken ?? null,
+            user.resetTokenExpires ?? null,
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
@@ -77,6 +83,8 @@ export class UserRepository implements IUserRepository {
             user.email,
             user.name,
             user.password,
+            user.resetToken ?? null,
+            user.resetTokenExpires ?? null,
             user.profileImage,
             user.career ?? null,
             user.intro ?? null,
@@ -99,6 +107,8 @@ export class UserRepository implements IUserRepository {
                     user.email,
                     user.name,
                     user.password,
+                    user.resetToken ?? null,
+                    user.resetTokenExpires ?? null,
                     user.profileImage,
                     user.career ?? null,
                     user.intro ?? null,
@@ -110,7 +120,7 @@ export class UserRepository implements IUserRepository {
         );
     }
 
-    async update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; baseLocation?: string | null; residenceTerm?: string | null; }): Promise<User> {
+    async update(id: string, data: Partial<UserPostRequest> & { profileImage?: string | null; career?: string | null; intro?: string | null; baseLocation?: string | null; residenceTerm?: string | null; resetToken?: string | null; resetTokenExpires?: Date | null; }): Promise<User> {
         const updated = await this.prisma.user.update({
             where: { id },
             data: data as any, // prisma client types may lag schema; cast to keep build passing until regenerate
@@ -120,6 +130,8 @@ export class UserRepository implements IUserRepository {
             updated.email,
             updated.name,
             updated.password,
+            updated.resetToken ?? null,
+            updated.resetTokenExpires ?? null,
             updated.profileImage,
             updated.career ?? null,
             updated.intro ?? null,
@@ -127,6 +139,46 @@ export class UserRepository implements IUserRepository {
             updated.residenceTerm ?? null,
             updated.createdAt,
             updated.updatedAt,
+        );
+    }
+
+    async findByNameAndEmail(name: string, email: string): Promise<User | null> {
+        const user = await (this.prisma.user as any).findFirst({ where: { name, email } });
+        if(!user) return null;
+        return new User(
+            user.id,
+            user.email,
+            user.name,
+            user.password,
+            user.resetToken ?? null,
+            user.resetTokenExpires ?? null,
+            user.profileImage,
+            user.career ?? null,
+            user.intro ?? null,
+            user.baseLocation ?? null,
+            user.residenceTerm ?? null,
+            user.createdAt,
+            user.updatedAt,
+        );
+    }
+
+    async findByResetToken(token: string): Promise<User | null> {
+        const user = await (this.prisma.user as any).findFirst({ where: { resetToken: token } });
+        if(!user) return null;
+        return new User(
+            user.id,
+            user.email,
+            user.name,
+            user.password,
+            user.resetToken ?? null,
+            user.resetTokenExpires ?? null,
+            user.profileImage,
+            user.career ?? null,
+            user.intro ?? null,
+            user.baseLocation ?? null,
+            user.residenceTerm ?? null,
+            user.createdAt,
+            user.updatedAt,
         );
     }
 }

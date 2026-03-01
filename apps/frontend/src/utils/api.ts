@@ -18,8 +18,10 @@ async function api(path: string, opts: FetchOpts) {
         },
         body: body ? JSON.stringify(body) : undefined,
     });
-    if(!res.ok) throw await res.json();
-    return res.json();
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : null;
+    if(!res.ok) throw (data ?? { message: res.statusText });
+    return data;
 }
 
 export const chatApi = {
@@ -38,6 +40,13 @@ export const userApi = {
         api("/User", { token }),
     update: (token: string, body: any) =>
         api("/User", { method: "PATCH", token, body }),
+};
+
+export const authApi = {
+    requestPasswordReset: (body: { name: string; email: string }) =>
+        api("/auth/password/verify", { method: "POST", body }),
+    resetPassword: (body: { token: string; newPassword: string }) =>
+        api("/auth/password/reset", { method: "POST", body }),
 };
 
 export const eventApi = {

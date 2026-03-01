@@ -8,6 +8,8 @@ export interface IUserRepository {
     delete(data: UserDeleteRequest): Promise<number>;
     findByName(name: string): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;
+    findByNameAndEmail(name: string, email: string): Promise<User | null>;
+    findByResetToken(token: string): Promise<User | null>;
     findById(id: string): Promise<User | null>;
     findAll(excludeUserId?: string): Promise<User[]>;
     update(
@@ -18,6 +20,8 @@ export interface IUserRepository {
             intro?: string | null;
             baseLocation?: string | null;
             residenceTerm?: string | null;
+            resetToken?: string | null;
+            resetTokenExpires?: Date | null;
         },
     ): Promise<User>;
 }

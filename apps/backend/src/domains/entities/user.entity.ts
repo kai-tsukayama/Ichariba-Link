@@ -4,6 +4,8 @@ export class User {
         public readonly email: string,
         public readonly name: string,
         public readonly password: string,
+        public readonly resetToken: string | null,
+        public readonly resetTokenExpires: Date | null,
         public readonly profileImage: string | null,
         public readonly career: string | null,
         public readonly intro: string | null,
